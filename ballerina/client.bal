@@ -128,6 +128,28 @@ public isolated client class Client {
         return error("Sheet not found");
     }
 
+    # Check wheather the given sheet is present.
+    #
+    # + spreadsheetId - ID of the spreadsheet  
+    # + sheetName - Name of the worksheet to retrieve
+    # + return - return true if the sheet is present, or false if the sheet is not present, else error.
+    remote isolated function checkSheetByName(@display {label: "Google Sheet ID"} string spreadsheetId,
+                                            @display {label: "Worksheet Name"} string sheetName) 
+                                                returns boolean|error {
+        string spreadsheetPath = SPREADSHEET_PATH + PATH_SEPARATOR + spreadsheetId;
+        json response = check sendRequest(self.httpClient, spreadsheetPath);
+        Spreadsheet spreadsheet = check response.fromJsonWithType();
+        boolean sheetExists = false;
+        Sheet[] sheets = spreadsheet.sheets;
+        foreach Sheet sheet in sheets {
+            if equalsIgnoreCase(sheet.properties.title, sheetName) {
+                sheetExists = true;
+                return sheetExists;
+            }
+        }
+        return sheetExists;
+    }
+
     # Add a new worksheet.
     #
     # + spreadsheetId - ID of the spreadsheet

@@ -150,6 +150,21 @@ function testGetSheetByName() {
 @test:Config {
     dependsOn: [testGetSheetByName]
 }
+
+function testCheckSheetByName() {
+    boolean|error spreadsheetRes = spreadsheetClient->checkSheetByName(spreadsheetId, testSheetName);
+    if spreadsheetRes is boolean {
+        test:assertTrue(spreadsheetRes, "Sheet does not exist");
+    } else {
+        test:assertFail(spreadsheetRes.message());
+    }
+}
+
+@test:Config {
+    dependsOn: [testCheckSheetByName]
+}
+
+
 function testRenameSheet() {
     string newName = testSheetName + " Renamed";
     error? spreadsheetRes = spreadsheetClient->renameSheet(spreadsheetId, "Sheet1", newName);
